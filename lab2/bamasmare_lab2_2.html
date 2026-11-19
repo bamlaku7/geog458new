@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>World Cities and Megacities</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+        #title {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.92);
+            padding: 10px 20px;
+            border-radius: 3px;
+            text-align: center;
+            color: #000;
+        }
+        #title h1 { margin: 0; font-size: 20px; }
+        #title p { margin: 4px 0 0; font-size: 13px; color: #444; }
+
+        #legend {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            width: 230px;
+            background: #fff;
+            padding: 10px 12px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        .row { display: flex; align-items: center; margin: 4px 0; }
+        .sym { display: inline-flex; justify-content: center; align-items: center; width: 44px; margin-right: 8px; flex-shrink: 0; }
+        .dot { border-radius: 50%; opacity: 0.8; }
+        .note { font-size: 11px; color: #444; margin: 8px 0 0; }
+        #legend a { color: black; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="title">
+        <h1>Where the World's Megacities Are</h1>
+        <p>All cities by population. Megacities have 10 million people or more.</p>
+    </div>
+    <div id="legend"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYmFtbGFrdSIsImEiOiJjbXZ2Ynk5MG8wMGk2MzVwcDkwN3BzeGdwIn0.btFh3nobZFL_eKPF7FXRjw';
+
+        const NAME_FIELD = 'accentcity'; 
+        const POP_FIELD = 'population';   
+
+        const BREAK_1 = 1000000;
+        const BREAK_2 = 5000000;
+        const BREAK_3 = 10000000;
+        const COLORS = ['#fdd49e', '#fc8d59', '#d7301f', '#7f0000'];
+
+        // Bigger cities get bigger circles. I used the square root of population so the circle's area matches the population.
+        //Small cities have a minimum size so you can still see them.        
+        
+        const SIZE_SCALE = 0.0036;
+        const MIN_RADIUS = 1.5;
+
+        // I used a light, flat map so the colored circles are easy to see
+        const mymap = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v11',
+            projection: 'mercator', 
+            center: [10, 25],
+            zoom: 1.5
+        });
+
+        mymap.addControl(new mapboxgl.NavigationControl());
+
+        mymap.on('load', () => {
+
+            mymap.addSource('population', {
+                type: 'geojson',
+                data: 'data/world-cities.geojson'
+            });
+
+            // For size, I made the radius go up with the square root of population. That way the circle's area matches the population. If the radius went up with population itself, Tokyo would look huge.
+            // Small cities all get a 1.5 px minimum so you can still see them.
+            // For color, I split the cities into 4 groups: under 1M, 1M to 5M, 5M to 10M, and 10M and up.
+            // I used 10M for the top group because that's the usual cutoff for a megacity.
+            // Most cities in the data are under 1M, so the lower breaks help separate big cities from small ones.
+            // The colors go from light orange to dark red. Darker means more people.
+            // I made megacities the darkest red so they stand out from all the small dots.
+
+
+            mymap.addLayer({
+                id: 'cities-layer',
+                type: 'circle',
+                source: 'population',
+                layout: {
+                    'circle-sort-key': ['to-number', ['get', POP_FIELD], 0]
+                },
+                paint: {
+                    'circle-radius': [
+                        'max', MIN_RADIUS,
+                        ['*', SIZE_SCALE, ['sqrt', ['to-number', ['get', POP_FIELD], 0]]]
+                    ],
+                    'circle-color': [
+                        'step',
+                        ['to-number', ['get', POP_FIELD], 0],
+                        COLORS[0],
+                        BREAK_1, COLORS[1],
+                        BREAK_2, COLORS[2],
+                        BREAK_3, COLORS[3]
+                    ],
+                    'circle-opacity': 0.8,
+                    'circle-stroke-width': 0.5,
+                    'circle-stroke-color': 'white'
+                }
+            });
+
+            mymap.on('click', 'cities-layer', (event) => {
+                const feature = event.features[0];
+                const name = feature.properties[NAME_FIELD];
+                const population = Number(feature.properties[POP_FIELD]);
+
+                new mapboxgl.Popup()
+                    .setLngLat(feature.geometry.coordinates.slice(0, 2))
+                    .setHTML(`<strong>${name}</strong><br>Population: ${population.toLocaleString()}`)
+                    .addTo(mymap);
+            });
+
+            mymap.on('mouseenter', 'cities-layer', () => { mymap.getCanvas().style.cursor = 'pointer'; });
+            mymap.on('mouseleave', 'cities-layer', () => { mymap.getCanvas().style.cursor = ''; });
+        });
+
+                // Legend. It uses the same size formula and class colors as the map, so the sizes and colors match
+        const legend = document.getElementById('legend');
+        const legendValues = [100000, 1000000, 5000000, 10000000, 30000000];
+        const legendLabels = ['100,000', '1 million', '5 million', '10 million (megacity)', '30 million'];
+
+        function legendRadius(pop) {
+            return Math.max(MIN_RADIUS, SIZE_SCALE * Math.sqrt(pop));
+        }
+
+        function legendColor(pop) {
+            if (pop >= BREAK_3) return COLORS[3];
+            if (pop >= BREAK_2) return COLORS[2];
+            if (pop >= BREAK_1) return COLORS[1];
+            return COLORS[0];
+        }
+
+        let html = '<strong>City population</strong>';
+        for (let i = 0; i < legendValues.length; i++) {
+            const diameter = 2 * legendRadius(legendValues[i]); 
+            html += '<div class="row"><span class="sym"><i class="dot" style="background:' +
+                legendColor(legendValues[i]) + '; width:' + diameter + 'px; height:' + diameter +
+                'px;"></i></span><span>' + legendLabels[i] + '</span></div>';
+        }
+        html += '<p class="note">Circle area is proportional to population. Dark red circles are megacities (10 million or more).</p>';
+        html += '<p style="text-align:right; font-size:10px; margin:8px 0 0;">Source: ' +
+            '<a href="https://www.naturalearthdata.com/">Natural Earth</a></p>';
+
+        legend.innerHTML = html;
+    </script>
+</body>
+</html>

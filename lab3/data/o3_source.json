@@ -1,0 +1,24 @@
+{
+  "source": "U.S. EPA AirData / AQS",
+  "download_url": "https://aqs.epa.gov/aqsweb/airdata/daily_44201_2025.zip",
+  "parameter_code": "44201",
+  "date_local": "2025-06-07",
+  "selection": {
+    "state_code": "53",
+    "longitude": [
+      -123.0,
+      -121.5
+    ],
+    "latitude": [
+      46.7,
+      49.0
+    ],
+    "sample_duration": "8-HR RUN AVG BEGIN HOUR",
+    "event_type": "None",
+    "minimum_observation_percent": 75
+  },
+  "value": "1st Max Value (daily maximum 8-hour average), converted from ppm to ppb",
+  "deduplication": "One row per site; lowest POC kept.",
+  "station_count": 8,
+  "limits": "Teaching exercise. The IDW surface is an estimate, not a measurement or forecast."
+}

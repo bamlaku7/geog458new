@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 3: Western Washington Ozone</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@6.15.0/dist/maplibre-gl.css">
+  <style>
+    body { margin: 0; font: 14px/1.5 Arial, sans-serif; color: #182e3a; }
+    #map { position: absolute; inset: 0; }
+    #panel { position: absolute; top: 12px; left: 12px; padding: 16px;
+      width: 260px; max-width: calc(100% - 100px); background: white;
+      max-height: calc(100% - 80px); overflow: auto; border-radius: 6px; }
+    h1 { margin: 0 0 8px; font-size: 19px; }
+    p { margin: 8px 0; }
+    .ramp { height: 14px; background: linear-gradient(to right,
+      #f2f0f7, #cbc9e2, #9e9ac8, #756bb1, #54278f); }
+    .values { display: flex; justify-content: space-between; }
+    .maplibregl-popup-content { white-space: pre-line; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <section id="panel">
+    <h1>Western Washington Ozone</h1>
+    <p>June 7, 2025 | U.S. EPA AirData</p>
+    <p>For people with asthma or who exercise outdoors: where was ozone highest?</p>
+    <div>
+      <label><input id="show-surface" type="checkbox" checked> Show interpolation</label>
+    </div>
+    <div>
+      <label><input id="show-stations" type="checkbox" checked> Show stations</label>
+    </div>
+    <div id="legend">
+      <p><strong>Estimated ozone (ppb)</strong></p>
+      <div class="ramp"></div>
+      <div class="values"><span>30</span><span>36</span><span>42</span><span>48</span><span>54</span></div>
+      <p>Highest 8-hour average ozone. IDW estimates between 8 monitors, not official AQI.</p>
+    </div>
+  </section>
+
+  <script type="module">
+    import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.15.0/dist/maplibre-gl.mjs';
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: {
+        version: 8,
+        sources: {},
+        layers: [{ id: 'background', type: 'background',
+          paint: { 'background-color': '#edf1f0' } }]
+      },
+      center: [-122.3, 47.8],
+      zoom: 8,
+      minZoom: 8,
+      maxZoom: 11,
+      maxBounds: [[-123.3, 46.4], [-121.2, 49.3]]
+    });
+    map.addControl(new maplibregl.NavigationControl());
+    map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }));
+
+    map.on('error', (event) => {
+      console.warn(event.error);
+    });
+
+    map.on('load', () => {
+      // Basemap tiles from the second Studio style
+      map.addSource('basemap-tiles', {
+        type: 'raster',
+        tiles: ['assets/mapbox-independent/{z}/{x}/{y}.png'],
+        tileSize: 256,
+        scheme: 'xyz',
+        minzoom: 8,
+        maxzoom: 11,
+        bounds: [-123.0, 46.65, -121.5, 49.05],
+        attribution: '© Mapbox © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      });
+      map.addLayer({
+        id: 'basemap',
+        type: 'raster',
+        source: 'basemap-tiles',
+        paint: { 'raster-opacity': 1, 'raster-fade-duration': 0 }
+      });
+
+      // Ozone surface tiles
+      map.addSource('o3-tiles', {
+        type: 'raster',
+        tiles: ['assets/o3-independent/{z}/{x}/{y}.png'],
+        tileSize: 256,
+        scheme: 'xyz',
+        minzoom: 8,
+        maxzoom: 11,
+        bounds: [-123.0, 46.65, -121.5, 49.05],
+        attribution: 'Ozone: U.S. EPA AirData, 2025-06-07; IDW and map by Bamlaku'
+      });
+      map.addLayer({
+        id: 'o3-surface',
+        type: 'raster',
+        source: 'o3-tiles',
+        paint: { 'raster-opacity': 0.7, 'raster-fade-duration': 0 }
+      });
+
+      document.getElementById('show-surface').addEventListener('change', (event) => {
+        map.setLayoutProperty('o3-surface', 'visibility',
+          event.target.checked ? 'visible' : 'none');
+        document.getElementById('legend').hidden = !event.target.checked;
+      });
+
+      // Monitoring stations, colored by measured value
+      map.addSource('station-data', {
+        type: 'geojson',
+        data: 'data/o3_stations.geojson'
+      });
+      map.addLayer({
+        id: 'stations',
+        type: 'circle',
+        source: 'station-data',
+        paint: {
+          'circle-radius': 7,
+          'circle-color': [
+            'step', ['get', 'o3'],
+            '#f2f0f7',
+            36, '#cbc9e2',
+            42, '#9e9ac8',
+            48, '#756bb1',
+            54, '#54278f'
+          ],
+          'circle-stroke-color': '#18364d',
+          'circle-stroke-width': 2
+        }
+      });
+
+      map.on('click', 'stations', (event) => {
+        const feature = event.features[0];
+        const station = feature.properties;
+        new maplibregl.Popup()
+          .setLngLat(feature.geometry.coordinates)
+          .setText([
+            station.station_name,
+            'Measured ozone: ' + station.o3 + ' ' + station.units,
+            'Date: ' + station.date,
+            'Station ID: ' + station.station_id
+          ].join('\n'))
+          .addTo(map);
+      });
+      map.on('mouseenter', 'stations', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'stations', () => {
+        map.getCanvas().style.cursor = '';
+      });
+      document.getElementById('show-stations').addEventListener('change', (event) => {
+        map.setLayoutProperty('stations', 'visibility',
+          event.target.checked ? 'visible' : 'none');
+      });
+    });
+  </script>
+</body>
+</html>

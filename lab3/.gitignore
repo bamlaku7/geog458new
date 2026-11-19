@@ -1,0 +1,6 @@
+_unused/
+o3-independent.zip
+assets/pm25-independent/
+data/daily_44201_2025.csv
+*.qgz
+.DS_Store

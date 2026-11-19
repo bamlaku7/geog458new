@@ -1,0 +1,173 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "station_id": "53-033-0010",
+    "station_name": "ISSAQUAH -  LAKE SAMMAMISH (Wiithin Lake Sammamish State Park)",
+    "o3": 42.0,
+    "date": "2025-06-07",
+    "units": "ppb",
+    "county": "King",
+    "poc": 1,
+    "sample_duration": "8-HR RUN AVG BEGIN HOUR",
+    "observation_percent": 100.0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -122.064722,
+     47.5525
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "station_id": "53-033-0017",
+    "station_name": "NORTH BEND - NORTH BEND WAY",
+    "o3": 40.0,
+    "date": "2025-06-07",
+    "units": "ppb",
+    "county": "King",
+    "poc": 1,
+    "sample_duration": "8-HR RUN AVG BEGIN HOUR",
+    "observation_percent": 100.0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -121.77278,
+     47.49022
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "station_id": "53-033-0023",
+    "station_name": "ENUMCLAW - MUD MTN (Army Corp of Engineers site)",
+    "o3": 53.0,
+    "date": "2025-06-07",
+    "units": "ppb",
+    "county": "King",
+    "poc": 1,
+    "sample_duration": "8-HR RUN AVG BEGIN HOUR",
+    "observation_percent": 100.0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -121.9379,
+     47.1411
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "station_id": "53-033-0080",
+    "station_name": "SEATTLE - BEACON HILL",
+    "o3": 40.0,
+    "date": "2025-06-07",
+    "units": "ppb",
+    "county": "King",
+    "poc": 1,
+    "sample_duration": "8-HR RUN AVG BEGIN HOUR",
+    "observation_percent": 100.0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -122.308628,
+     47.568236
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "station_id": "53-053-0012",
+    "station_name": "MT RAINIER - JACKSON VISITIORS CENTER",
+    "o3": 42.0,
+    "date": "2025-06-07",
+    "units": "ppb",
+    "county": "Pierce",
+    "poc": 1,
+    "sample_duration": "8-HR RUN AVG BEGIN HOUR",
+    "observation_percent": 100.0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -121.740367,
+     46.7841
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "station_id": "53-057-0011",
+    "station_name": "Anacortes-202 Ave",
+    "o3": 32.0,
+    "date": "2025-06-07",
+    "units": "ppb",
+    "county": "Skagit",
+    "poc": 1,
+    "sample_duration": "8-HR RUN AVG BEGIN HOUR",
+    "observation_percent": 82.0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -122.61428,
+     48.52059
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "station_id": "53-067-0013",
+    "station_name": "LACEY - COLLEGE ST",
+    "o3": 41.0,
+    "date": "2025-06-07",
+    "units": "ppb",
+    "county": "Thurston",
+    "poc": 1,
+    "sample_duration": "8-HR RUN AVG BEGIN HOUR",
+    "observation_percent": 100.0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -122.821548,
+     47.029396
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "station_id": "53-073-0005",
+    "station_name": "CUSTER - LOOMIS",
+    "o3": 34.0,
+    "date": "2025-06-07",
+    "units": "ppb",
+    "county": "Whatcom",
+    "poc": 1,
+    "sample_duration": "8-HR RUN AVG BEGIN HOUR",
+    "observation_percent": 100.0
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -122.55441,
+     48.95074
+    ]
+   }
+  }
+ ]
+}

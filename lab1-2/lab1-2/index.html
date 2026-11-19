@@ -1,0 +1,49 @@
+<!DOCTYPE html> <!-- Tells browser that this is HTML Doc-->
+<html lang='en'> <!-- Sets language to english and opens the page-->
+<head> <!-- Opens the head containing settings and non-visible content-->
+    <meta charset='utf-8' /> <!--lets the page display characters correctly-->
+    <title>My First Map</title> <!-- Title for the browser tab -->
+    <meta name='viewport' content='width=device-width, initial-scale=1' /> <!-- Allows the page to fit both phone and desktop screens -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet"> <!-- Loads Mapbox styles for the map -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script> <!-- Loads Mapbox library to draws the map -->
+    <style> /*Opens css styling for the page*/
+        body { margin: 0; padding: 0; } /*Removes the default spacing to help the map reach the frame*/
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; } /*Stretches the map to fill the window*/
+   </style> <!-- closes css styling -->
+</head> <!--closes the head -->
+
+<body> <!-- opens the body for visible content -->
+   <div id='map'></div> <!--Creates an empty box for the map to be drawn-->
+   <!-- 
+   Style Explanation. 
+   
+   The first property which is setting the theme to monochrome from default affects mainly roads, water, parks, and buildings by shading them of one color rather than many of them. 
+   Used best when adding your own markers, the theme would make your marker stand out.
+
+   The second property was to set the font to Inter which changes the font of street and place names to a sans-serif font that stays clear at small and large sizes.
+   Best for maps being used on phones
+
+   -->
+   <script>
+      mapboxgl.accessToken = 'pk.eyJ1IjoiYmFtbGFrdSIsImEiOiJjbXZ2Ynk5MG8wMGk2MzVwcDkwN3BzeGdwIn0.btFh3nobZFL_eKPF7FXRjw'; // gives mapbox my public access token
+      
+      const mymap = new mapboxgl.Map({ //Initializes the Mapbox instance and renders the map inside the #map element
+             container: 'map', //tells mapbox to draw inside div with id "map"
+             //style: 'mapbox://styles/mapbox/light-v11', //picks the street style for buildings and labels
+             //projection: 'globe', //Display the map as a globe since satellite-v9 defaults to Mercator
+             center: [-122.3425, 47.6097], //These are the coordinates for Pike Place Market area downtown seattle
+             zoom:15 //This is how far the map is zoomed in to identify the market streets and buildings close enough
+          });
+    mymap.addControl(new mapboxgl.FullscreenControl()); //Adds fullscreen button to my map
+    mymap.addControl(new mapboxgl.NavigationControl()); // Adds zoom in/out buttons
+
+    mymap.on('style.load', () => { //Waits until the map style finishes loading to run the code inside, if ran too early would fail 
+        mymap.setConfigProperty('basemap', 'lightPreset', 'dusk'); // Changes the basemap lighting to dusk, which gives a warmer light
+        mymap.setConfigProperty('basemap', 'showPointOfInterestLabels', false); //Hides all point of interest icons and text ex)shops, restaurants, and parks
+        mymap.setConfigProperty('basemap', 'theme', 'monochrome'); //Sets the basemap theme to monochrome so the map appears in shades of just one color   
+        mymap.setConfigProperty('basemap', 'font', 'Inter'); //Sets the font to Inter for all labels
+    });
+
+</script> <!-- Closes the javascript section-->
+</body> <!-- Closes the body-->
+</html> <!-- Closes the page-->
