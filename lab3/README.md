@@ -3,8 +3,8 @@
 Author: Bamlaku (UW). Both maps use MapLibre GL JS with pre-rendered PNG tiles (XYZ, 256 px) and no Mapbox token in the page.
 
 Live pages:
-- Guided: https://bamlaku7.github.io/geog458-labs/lab3/bamasmare_lab3-1.html
-- Independent: https://bamlaku7.github.io/geog458-labs/lab3/bamasmare_lab3-2.html
+- Guided: https://bamlaku7.github.io/geog458new/lab3/bamasmare_lab3-1.html
+- Independent: https://bamlaku7.github.io/geog458new/lab3/bamasmare_lab3-2.html
 
 ## Map 1: Puget Sound PM2.5 (guided)
 
